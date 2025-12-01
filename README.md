@@ -60,7 +60,7 @@ Tüm ağ istekleri **URLSession** tabanlı **APIClient** üzerinden yönetilir.
 - `DefaultAuthRepository`, `DefaultParkingRepository` → implementasyon  
 
 ---
-📡 Backend
+## 📡 Backend
 
 Backend Spring Boot ile geliştirilmiştir:
 https://github.com/MAErd4141/SmartParkingPrototype
@@ -69,18 +69,17 @@ https://github.com/MAErd4141/SmartParkingPrototype
 ## 🛠️ Kurulum
 
 1. Repoyu klonlayın:
-```bash
-git clone https://github.com/kullanici/smart-parking-ios.git
-
-    Xcode ile açın:
-
-open OtoparkDeneme1.xcodeproj
-
-    Backend base URL’ini APIConfig.swift içinde yapılandırın.
-
-    Çalıştırın:
+   ```bash
+   git clone https://github.com/UlkeNn/smart-parking-ios.git
+   cd smart-parking-ios
+2. Xcode ile açın:
+   ```bash
+   open OtoparkDeneme1.xcodeproj
+3. Backend base URL’ini APIConfig.swift içinde yapılandırın:
+   ```bash
+   static let baseURL = "http://192.168.1.xxx:8080"
+   
+4. Uygulamayı çalıştırın:
 
     iPhone Simulator
-
     veya gerçek cihaz
-
