@@ -1,0 +1,43 @@
+# Normalize line endings for all text files
+* text=auto eol=lf
+
+# Swift files — improve diff view
+*.swift text diff=swift
+
+# JSON — clean diffs
+*.json text
+*.json linguist-language=JSON
+
+# Markdown — better diffs
+*.md text
+*.md linguist-language=Markdown
+
+# YAML
+*.yml text
+*.yaml text
+
+# Treat images as binary (no diff)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.heic binary
+
+# Xcode project files — reduce merge conflicts
+*.pbxproj merge=union
+*.xcscheme text
+
+# Ignore Windows line endings for plist
+*.plist text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+
+# Swift Package Manager generated files
+Package.resolved text
+
+# Ignore Carthage binaries
+Carthage/Build/* binary
+
+# Keep executable permissions on scripts
+*.sh eol=lf
