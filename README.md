@@ -19,17 +19,14 @@ Bu proje, kullanıcıların otoparkları harita üzerinden görüntüleyip rezer
 
 > Ekran görüntüleri uygulamanın gerçek çalışır haline aittir.
 
-### 🏠 **Ana Sayfa**
-<img src="screenshots/home.png" width="300">
+<h3>🏠 Ana Sayfa — 🗺️ Harita — 👤 Profil — 📄 Rezervasyonlarım</h3>
 
-### 🗺️ **Harita Görünümü**
-<img src="screenshots/map.png" width="300">
-
-### 👤 **Profil**
-<img src="screenshots/profile.png" width="300">
-
-### 📄 **Rezervasyonlarım**
-<img src="screenshots/reservations.png" width="300">
+<p align="center">
+  <img src="screenshots/home.png" width="200">
+  <img src="screenshots/map.png" width="200">
+  <img src="screenshots/profile.png" width="200">
+  <img src="screenshots/reservations.png" width="200">
+</p>
 ---
 
 ## 🏗️ Mimarî Yapı
