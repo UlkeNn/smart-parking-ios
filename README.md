@@ -14,19 +14,17 @@ Bu proje, kullanıcıların otoparkları harita üzerinden görüntüleyip rezer
 - 🎨 Modern SwiftUI tasarımı
 ---
 
+## 🖼️ Ekran Görüntüleri
 
-# 🖼️ Uygulama Görselleri
+<table>
+  <tr>
+    <td><img src="screenshots/home.png" width="200"></td>
+    <td><img src="screenshots/map.png" width="200"></td>
+    <td><img src="screenshots/profile.png" width="200"></td>
+    <td><img src="screenshots/reservations.png" width="200"></td>
+  </tr>
+</table>
 
-> Ekran görüntüleri uygulamanın gerçek çalışır haline aittir.
-
-<h3>🏠 Ana Sayfa — 🗺️ Harita — 👤 Profil — 📄 Rezervasyonlarım</h3>
-
-<p align="center">
-  <img src="screenshots/home.png" width="200">
-  <img src="screenshots/map.png" width="200">
-  <img src="screenshots/profile.png" width="200">
-  <img src="screenshots/reservations.png" width="200">
-</p>
 ---
 
 ## 🏗️ Mimarî Yapı
