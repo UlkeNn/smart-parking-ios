@@ -11,7 +11,8 @@ import SwiftUI
 struct LaneGroupView: View {
     let lanes: [String]
     let spotsByLane: [String: [ParkingSpot]]
-    let selectedSpotId: String?
+    let selectedSpotId: UUID?              //UUID YAPILDI
+    let unavailableSpotIds: Set<UUID>
     let onSelect: (ParkingSpot) -> Void
     
     var body: some View {
@@ -21,7 +22,8 @@ struct LaneGroupView: View {
                     ForEach(spotsByLane[lane] ?? []) { spot in
                         ParkingSpotView(
                             spot: spot,
-                            isSelected: selectedSpotId == spot.id,
+                            isSelected: spot.id == selectedSpotId,
+                            isUnavailable: unavailableSpotIds.contains(spot.id),   
                             onSelect: { onSelect(spot) }
                         )
                     }

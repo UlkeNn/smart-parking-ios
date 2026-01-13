@@ -14,8 +14,8 @@ final class MyVehiclesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
 
-    // ✅ view içi selection
-    @Published private(set) var selectedVehicleId: String?
+    // ✅ artık UUID
+    @Published private(set) var selectedVehicleId: UUID?
 
     private let repo: VehicleRepository
 
@@ -34,7 +34,7 @@ final class MyVehiclesViewModel: ObservableObject {
             let fetched = try await repo.fetchMyVehicles(token: token)
             vehicles = fetched
 
-            // eğer selected yoksa -> ilkini seç
+            // selected yoksa -> ilkini seç
             if selectedVehicleId == nil {
                 selectedVehicleId = fetched.first?.id
             }
@@ -44,7 +44,7 @@ final class MyVehiclesViewModel: ObservableObject {
         }
     }
 
-    func setSelectedVehicleId(_ id: String) {
+    func setSelectedVehicleId(_ id: UUID) {
         selectedVehicleId = id
     }
 
@@ -55,34 +55,35 @@ final class MyVehiclesViewModel: ObservableObject {
         }
         return vehicles.first
     }
-    
+
     func delete(vehicle: Vehicle, session: UserSession) async {
-            do {
-                try await repo.deleteVehicle(id: vehicle.id, token: session.token)
+        do {
+            try await repo.deleteVehicle(id: vehicle.id, token: session.token)
 
-                // local state
-                vehicles.removeAll { $0.id == vehicle.id }
+            vehicles.removeAll { $0.id == vehicle.id }
 
-                // seçili araç silindiyse yeni seç
-                if session.selectedVehicleId == vehicle.id {
-                    let newId = vehicles.first?.id
-                    session.selectedVehicleId = newId
-                    session.persistSelectedVehicle()
-                    selectedVehicleId = newId
-                }
-            } catch {
-                errorMessage = error.localizedDescription
+            // seçili araç silindiyse yeni seç
+            if session.selectedVehicleId == vehicle.id {
+                let newId = vehicles.first?.id
+                session.selectedVehicleId = newId          // UUID?
+                // persistSelectedVehicle didSet ile çağrılıyorsa şart değil,
+                // ama sende duruyorsa kalsın
+                session.persistSelectedVehicle()
+                selectedVehicleId = newId
             }
+        } catch {
+            errorMessage = error.localizedDescription
         }
+    }
 
-        // ✅ onDelete için (indexSet)
-        func delete(at offsets: IndexSet, session: UserSession) async {
-            for index in offsets {
-                guard vehicles.indices.contains(index) else { continue }
-                let v = vehicles[index]
-                await delete(vehicle: v, session: session)
-            }
+    func delete(at offsets: IndexSet, session: UserSession) async {
+        for index in offsets {
+            guard vehicles.indices.contains(index) else { continue }
+            let v = vehicles[index]
+            await delete(vehicle: v, session: session)
         }
+    }
+
     func addVehicle(plateNumber: String, type: VehicleType, session: UserSession) async throws {
         let trimmed = plateNumber.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -92,13 +93,11 @@ final class MyVehiclesViewModel: ObservableObject {
             token: session.token
         )
 
-        // listeye ekle
         vehicles.insert(created, at: 0)
 
-        // istersen yeni ekleneni otomatik seç
+        // yeni ekleneni otomatik seç
         session.selectedVehicleId = created.id
         session.persistSelectedVehicle()
         setSelectedVehicleId(created.id)
     }
-
 }

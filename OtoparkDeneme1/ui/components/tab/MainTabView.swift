@@ -10,16 +10,14 @@ import SwiftUI
 struct MainTabView: View {
     var body: some View {
         TabView {
-            HomeTab()   // kendi NavigationStack’i içinde
+            HomeTab()
                 .tabItem { Label("Anasayfa", systemImage: "homekit") }
-            MyReservationsTab()   // 🔹 Yeni sekme
-                            .tabItem {
-                                Label("Rezervasyonlarım", systemImage: "calendar.badge.clock")
-                            }
-            SettingsTab()
-                .tabItem { Label("Ayarlar", systemImage: "gear") }
+            
+            MyReservationsTab()
+                .tabItem { Label("Rezervasyonlarım", systemImage: "calendar.badge.clock") }
         }
-        .tabBarStyled()
+        // ✅ TabView'un altına kendi rengini döşe ki boşluk kalsa bile aynı renk görünsün
+        .background(Color("ButtonBGColorOnB").ignoresSafeArea())
     }
 }
 
@@ -44,6 +42,10 @@ struct HomeTab: View {
                         .toolbar(.hidden, for: .tabBar)//Tabbar saklanır
                 }
         }
+        .background(Color("ButtonBGColorOnB"))
+        .ignoresSafeArea(.container, edges: .bottom)
+
+
     }
 }
 // MARK: - Rezervasyonlar tab
@@ -67,17 +69,19 @@ struct MyReservationsTab: View {
                     ParkingMapView()
                         .toolbar(.hidden, for: .tabBar)//Tabbar saklanır
                 }
+                .navigationDestination(for: Route.self) { route in
+                    switch route {
+                    case let .reservationQR(reservation):
+                        ReservationQRView(reservation: reservation)
+                    }
+                }
         }
+        .background(Color("ButtonBGColorOnB"))
+        .ignoresSafeArea(.container, edges: .bottom)
+
     }
 }
-// MARK: - Settings tab
-struct SettingsTab: View {
-    var body: some View {
-        NavigationStack {
-            Settings()
-        }
-    }
-}
+
 
 #Preview {
     MainTabView()

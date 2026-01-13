@@ -5,7 +5,7 @@
 //  Created by Ulgen on 20.10.2025.
 //
 enum HomeRoute: Hashable {
-    case newReservation(parking: Parking, start: Date, end: Date, vehicleId: String)
+    case newReservation(parking: Parking, start: Date, end: Date, vehicleId: UUID)
     case vehiclesList
 }
 
@@ -17,7 +17,7 @@ struct HomeView: View {
 
     @EnvironmentObject var session: UserSession
 
-    // ✅ init yok, AppContainer yok
+    //  init yok, AppContainer yok
     @StateObject private var vehicleVM = MyVehiclesViewModel()
     @StateObject private var vm = ParkingListViewModel()
     
@@ -55,16 +55,7 @@ struct HomeView: View {
                         .environmentObject(session)
                         .padding(.horizontal)
 
-                        /*
-                        // ✅ Araç Kartı
-                        VehicleCardView(
-                            vehicle: vehicleVM.activeVehicle,     // ✅ primaryVehicle değil
-                            isLoading: vehicleVM.isLoading,
-                            onEditTap: { },
-                            onExploreTap: { showingVehiclesSheet = true }
-                        )
-                        .padding(.horizontal)
-*/
+                       
                         VStack(spacing: 14) {
                             ForEach(filteredParkings) { parking in
                                 ParkingCardView(parking: parking) {
@@ -118,7 +109,7 @@ struct HomeView: View {
                         let vehicleId =
                             session.selectedVehicleId
                             ?? vehicleVM.activeVehicle?.id
-                            ?? "f7dfec42-133a-4e80-9ea8-27e2b7a3270b" // fallback test
+                        ?? UUID(uuidString: "f7dfec42-133a-4e80-9ea8-27e2b7a3270b")! // fallback test
 
                         path.append(.newReservation(
                             parking: parking,

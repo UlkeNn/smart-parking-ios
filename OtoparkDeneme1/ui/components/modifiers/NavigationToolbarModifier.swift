@@ -27,12 +27,47 @@ extension View {
         modifier(NavigationToolbarModifier(provider: provider))
     }
 }
-extension View {
-    func tabBarStyled() -> some View {
-        self
-            .toolbarBackground(.visible, for: .tabBar)
-            .toolbarBackground(Color.indigo, for: .tabBar)
-            .toolbarColorScheme(.dark, for: .tabBar)
-            .tint(.white)
+
+
+enum TabBarTheme {
+    static func apply() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+
+        let bg = UIColor(named: "TabBarBGColor") ?? .black
+        let selected = UIColor(named: "BGColor") ?? .white
+        let unselected = UIColor(named: "ButtonBGColorOnB") ?? UIColor.white.withAlphaComponent(0.6)
+
+        appearance.backgroundColor = bg
+        appearance.backgroundEffect = nil   // ✅ blur/material kapat
+        appearance.shadowColor = .clear     // ✅ üst çizgi kapat
+
+        // ✅ Stacked (en yaygın)
+        appearance.stackedLayoutAppearance.selected.iconColor = selected
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: selected]
+        appearance.stackedLayoutAppearance.normal.iconColor = unselected
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselected]
+
+        // ✅ Inline (bazı durumlarda devreye girer)
+        appearance.inlineLayoutAppearance.selected.iconColor = selected
+        appearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: selected]
+        appearance.inlineLayoutAppearance.normal.iconColor = unselected
+        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselected]
+
+        // ✅ Compact inline (iPhone landscape vb)
+        appearance.compactInlineLayoutAppearance.selected.iconColor = selected
+        appearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: selected]
+        appearance.compactInlineLayoutAppearance.normal.iconColor = unselected
+        appearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselected]
+
+        let tabBar = UITabBar.appearance()
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+        tabBar.isTranslucent = false
+        tabBar.backgroundColor = bg          // ✅ alt beyaz alanı öldürür
+        tabBar.barTintColor = bg             // ✅ ekstra garanti
+
+        tabBar.tintColor = selected
+        tabBar.unselectedItemTintColor = unselected
     }
 }

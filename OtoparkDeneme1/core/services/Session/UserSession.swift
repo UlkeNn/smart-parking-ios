@@ -16,7 +16,20 @@ final class UserSession: ObservableObject {
     @Published var token: String?
 
     // Aktif araç
-    @Published var selectedVehicleId: String?
+    // UserDefaults için en sorunsuz: String sakla
+    @Published var selectedVehicleIdString: String? {
+        didSet { persistSelectedVehicle() }
+    }
+    // Uygulama içinde UUID gibi kullanacağın alan:
+    var selectedVehicleId: UUID? {
+        get {
+            guard let s = selectedVehicleIdString else { return nil }
+            return UUID(uuidString: s)
+        }
+        set {
+            selectedVehicleIdString = newValue?.uuidString
+        }
+    }
 
     // Kullanıcının giriş yapıp yapmadığını anlamanın tek yolu
     var isLoggedIn: Bool { token != nil }
@@ -24,12 +37,12 @@ final class UserSession: ObservableObject {
     // MARK: - Init
     init(
         user: User,
-        token: String? = nil,
-        selectedVehicleId: String? = nil
-    ) {
+        token: String? = nil) {
         self.user = user
         self.token = token
-        self.selectedVehicleId = selectedVehicleId
+        self.selectedVehicleIdString =
+                    UserDefaults.standard.string(forKey: Self.selectedVehicleKey)
+
     }
 
     // MARK: - Login uygula
@@ -81,10 +94,14 @@ final class UserSession: ObservableObject {
 // VEHICLE
 extension UserSession {
 
-    private static let selectedVehicleKey = "selectedVehicleId"
+    static let selectedVehicleKey = "selectedVehicleId"
 
     func persistSelectedVehicle() {
-        UserDefaults.standard.set(selectedVehicleId, forKey: Self.selectedVehicleKey)
+        if let id = selectedVehicleIdString {
+            UserDefaults.standard.set(id, forKey: Self.selectedVehicleKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: Self.selectedVehicleKey)
+        }
     }
 
     static func loadSelectedVehicleId() -> String? {
@@ -92,16 +109,15 @@ extension UserSession {
     }
 
     func clearSelectedVehicle() {
-        selectedVehicleId = nil
-        UserDefaults.standard.removeObject(forKey: Self.selectedVehicleKey)
+        selectedVehicleIdString = nil
     }
 }
+
 
 // MARK: - İlk açılış load
 extension UserSession {
     static func initial() -> UserSession {
         let storedToken = KeychainStorage.load()?.token
-        let storedVehicleId = UserSession.loadSelectedVehicleId()
 
         let emptyUser = User(
             fullName: "",
@@ -113,11 +129,11 @@ extension UserSession {
 
         return UserSession(
             user: emptyUser,
-            token: storedToken,
-            selectedVehicleId: storedVehicleId
+            token: storedToken
         )
     }
 }
+
 
 
 

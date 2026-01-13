@@ -7,8 +7,8 @@
 
 import Foundation
 struct CreateReservationRequest: Encodable {
-    let parkingSpotId: String   // UUID DEĞİL → STRING
-    let vehicleId: String       // UUID DEĞİL → STRING
+    let parkingSpotId: UUID
+    let vehicleId: UUID       // UUID DEĞİL → STRING
     let reservedStart: String
     let reservedEnd: String
 }

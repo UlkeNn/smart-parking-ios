@@ -11,6 +11,6 @@ struct APIConfig {
 
     // İstersen farklı ortamlar:
     static let development = APIConfig(
-        baseURL: URL(string: "BACKEND BASE URL HERE")!////!!!!!!!!!!!!!!!!!!!!!!!!!!
+        baseURL: URL(string: "http://Your.API.Is.Here:8080")!////!!!!!!!!!!!!!!!!!!!!!!!!!!
     )
 }

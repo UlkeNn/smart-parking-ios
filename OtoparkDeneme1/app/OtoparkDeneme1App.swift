@@ -10,7 +10,10 @@ import SwiftUI
 @main
 struct OtoparkDeneme1App: App {
     @StateObject private var session = UserSession.initial()
-    
+    init() {
+        AppAppearance.configureTabBar()
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()

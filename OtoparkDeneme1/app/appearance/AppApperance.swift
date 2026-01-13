@@ -4,27 +4,37 @@
 //
 //  Created by Ulgen on 29.10.2025.
 //
-
-import UIKit
 import SwiftUI
+import UIKit
 
 enum AppAppearance {
-    static func configure() {
+    static func configureTabBar() {
         let appearance = UITabBarAppearance()
-        appearance.backgroundColor = UIColor(named: "ButtonBGColorOnB")!
+        appearance.configureWithOpaqueBackground()
+        
+        let bg = UIColor(named: "ButtonBGColorOnB") ?? .black
+        let selected = UIColor(named: "Gray") ?? .white
+        let unselected = UIColor(named: "TextColorOnB") ?? UIColor.white.withAlphaComponent(0.6)
 
-        func style(_ item: UITabBarItemAppearance) {
-            item.selected.iconColor = UIColor(named: "Gray")!
-            item.selected.titleTextAttributes = [.foregroundColor: UIColor(named: "TextColorOnB2")!]
-            item.normal.iconColor = UIColor(named: "TextColorOnB")!
-            item.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "TextColorOnB")!]
+        appearance.backgroundColor = bg
+        
+        // ✅ Boşluğu ve üst çizgiyi (shadow) tamamen yok etmek için:
+        appearance.shadowColor = .clear
+        appearance.shadowImage = UIImage()
+
+        func apply(_ item: UITabBarItemAppearance) {
+            item.selected.iconColor = selected
+            item.selected.titleTextAttributes = [.foregroundColor: selected]
+            item.normal.iconColor = unselected
+            item.normal.titleTextAttributes = [.foregroundColor: unselected]
         }
 
-        style(appearance.stackedLayoutAppearance)
-        style(appearance.inlineLayoutAppearance)
-        style(appearance.compactInlineLayoutAppearance)
+        apply(appearance.stackedLayoutAppearance)
+        apply(appearance.inlineLayoutAppearance)
+        apply(appearance.compactInlineLayoutAppearance)
 
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        let tabBar = UITabBar.appearance()
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance // iOS 15+ için kritik
     }
 }

@@ -35,6 +35,27 @@ struct DateSelectionSheet: View {
                         displayedComponents: [.date, .hourAndMinute]
                     )
                 }
+                Section("Süre") {   //Kullanıcıya ne kadar süre rezerve ettiği gösterilsin.
+                    let minutes = Int(endDate.timeIntervalSince(startDate) / 60)
+                    let hours = minutes / 60
+                    let rem = minutes % 60
+
+                    HStack {
+                        Text("Toplam")
+                        Spacer()
+                        if minutes <= 0 {
+                            Text("—")
+                                .foregroundStyle(.secondary)
+                        } else if rem == 0 {
+                            Text("\(hours) saat")
+                                .font(.headline)
+                        } else {
+                            Text("\(hours) saat \(rem) dk")
+                                .font(.headline)
+                        }
+                    }
+                }
+
             }
             .navigationTitle("Tarih Seç")
             .toolbar {
@@ -49,6 +70,7 @@ struct DateSelectionSheet: View {
                 }
             }
         }
+        .environment(\.locale, Locale(identifier: "tr_TR"))//Artık tarihler ingilizce gözükmeyecek
     }
 }
 

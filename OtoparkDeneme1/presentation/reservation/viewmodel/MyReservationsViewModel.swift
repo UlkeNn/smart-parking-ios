@@ -14,6 +14,8 @@ final class MyReservationsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
+    @Published var isCancelling = false
+    
     private let repo: ReservationRepository
     
     init(repo: ReservationRepository = DefaultReservationRepository()) {
@@ -27,22 +29,46 @@ final class MyReservationsViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            reservations = try await repo.fetchMyReservations()
+            let fetched = try await repo.fetchMyReservations()
+
+            //  Gelecek → Geçmiş SIRALAMA
+            reservations = fetched.sorted {
+                $0.reservedStart > $1.reservedStart
+            }
 
         } catch is CancellationError {
-            // View kapandı / task iptal edildi -> normal, sessiz geç
             return
-
         } catch let urlError as URLError where urlError.code == .cancelled {
-            // NSURLErrorDomain Code=-999
             return
-
         } catch let decodingError as DecodingError {
-            print("🧨 Decoding error:", decodingError)
+            print("Decoding error:", decodingError)
             errorMessage = "Veri okunamadı (decode)."
-
         } catch {
-            print("🧨 Other error:", error)
+            print("Other error:", error)
             errorMessage = "Rezervasyonlar alınırken hata oluştu: \(error.localizedDescription)"
         }
-    }}
+    }
+    func cancel(_ reservation: Reservation) async {
+            guard !isCancelling else { return }
+            isCancelling = true
+            errorMessage = nil
+            defer { isCancelling = false }
+
+            do {
+                try await repo.cancelReservation(id: reservation.id)
+
+                // İstersen direkt listeden çıkar:
+                reservations.removeAll { $0.id == reservation.id }
+
+                // veya kesin güncel veri için:
+                // reservations = try await repo.fetchMyReservations()
+
+            } catch is CancellationError {
+                return
+            } catch {
+                print("🧨 Cancel error:", error)
+                errorMessage = "İptal sırasında hata oluştu: \(error.localizedDescription)"
+            }
+        }
+
+}

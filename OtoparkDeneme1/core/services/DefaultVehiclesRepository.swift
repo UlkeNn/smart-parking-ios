@@ -11,37 +11,38 @@ final class DefaultVehicleRepository: VehicleRepository {
 
     private let config: APIConfig
     private let client: APIClient
-    private let decoder: JSONDecoder = JSONDecoder()
+    private let decoder = JSONDecoder()
 
-    // Asıl init (DI için)
-    init(config: APIConfig, client: APIClient) {
+    init(config: APIConfig = .development, client: APIClient = URLSessionAPIClient()) {
         self.config = config
         self.client = client
     }
 
-    // Kolay kullanım (Auth’ta yaptığımız gibi)
     convenience init() {
-        self.init(
-            config: .development,
-            client: URLSessionAPIClient()
-        )
+        self.init(config: .development, client: URLSessionAPIClient())
     }
 
     // GET /api/vehicles/my
     func fetchMyVehicles(token: String?) async throws -> [Vehicle] {
+        let url = config.baseURL
+            .appendingPathComponent("api")
+            .appendingPathComponent("vehicles")
+            .appendingPathComponent("my")
 
-        // 🔴 APIConfig baseURL dışında tam URL
-        let url = URL(string: "http://31.57.187.120:8080/api/vehicles/my")!
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.addValue("application/json", forHTTPHeaderField: "Accept")
 
         if let token {
-            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        let (data, http) = try await client.send(request)
+        print("➡️ REQUEST URL:", req.url?.absoluteString ?? "nil")
+
+        let (data, http) = try await client.send(req)
+
+        print("📡 GET /api/vehicles/my status:", http.statusCode)
+        print("📦 body:", String(data: data, encoding: .utf8) ?? "-")
 
         guard (200..<300).contains(http.statusCode) else {
             throw URLError(.badServerResponse)
@@ -49,32 +50,64 @@ final class DefaultVehicleRepository: VehicleRepository {
 
         return try decoder.decode([Vehicle].self, from: data)
     }
-    func deleteVehicle(id: String, token: String?) async throws {
-            let url = config.baseURL.appendingPathComponent("/api/vehicles/\(id)")
 
-            var request = URLRequest(url: url)
-            request.httpMethod = "DELETE"
-            request.addValue("application/json", forHTTPHeaderField: "Accept")
-            if let token { request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+    // POST /api/vehicles
+    func createVehicle(_ request: CreateVehicleRequest, token: String?) async throws -> Vehicle {
+        let url = config.baseURL
+            .appendingPathComponent("api")
+            .appendingPathComponent("vehicles")
 
-            let (_, http) = try await client.send(request)
-            guard (200..<300).contains(http.statusCode) else { throw URLError(.badServerResponse) }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.addValue("application/json", forHTTPHeaderField: "Accept")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let token {
+            req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-    func createVehicle(_ requestBody: CreateVehicleRequest, token: String?) async throws -> Vehicle {
-        let url = config.baseURL.appendingPathComponent("/api/vehicles")
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        if let token { request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        req.httpBody = try JSONEncoder().encode(request)
 
-        request.httpBody = try JSONEncoder().encode(requestBody)
+        print("➡️ REQUEST URL:", req.url?.absoluteString ?? "nil")
 
-        let (data, http) = try await client.send(request)
-        guard (200..<300).contains(http.statusCode) else { throw URLError(.badServerResponse) }
+        let (data, http) = try await client.send(req)
+
+        print("📡 POST /api/vehicles status:", http.statusCode)
+        print("📦 body:", String(data: data, encoding: .utf8) ?? "-")
+
+        guard (200..<300).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
 
         return try decoder.decode(Vehicle.self, from: data)
     }
 
+    // DELETE /api/vehicles/{id}
+    func deleteVehicle(id: UUID, token: String?) async throws {
+        let url = config.baseURL
+            .appendingPathComponent("api")
+            .appendingPathComponent("vehicles")
+            .appendingPathComponent(id.uuidString)
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "DELETE"
+        req.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        if let token {
+            req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        print("➡️ REQUEST URL:", req.url?.absoluteString ?? "nil")
+
+        let (data, http) = try await client.send(req)
+
+        print("📡 DELETE /api/vehicles/{id} status:", http.statusCode)
+        print("📦 body:", String(data: data, encoding: .utf8) ?? "-")
+
+        guard (200..<300).contains(http.statusCode) else {
+            throw NSError(domain: "VehicleRepo",
+                          code: http.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "HTTP \(http.statusCode)"])
+        }
+    }
 }

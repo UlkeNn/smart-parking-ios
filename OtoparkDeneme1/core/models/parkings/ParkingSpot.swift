@@ -14,7 +14,7 @@ enum ParkingSpotType: String, Decodable {
 }
 
 struct ParkingSpot: Identifiable, Decodable {
-    let id: String
+    let id: UUID
     let spotCode: String      // Örn: "A-2"
     let occupied: Bool
     let parkingLotId: String

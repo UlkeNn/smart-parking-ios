@@ -22,7 +22,7 @@ enum VehicleType: String, Codable {
 }
 
 struct Vehicle: Identifiable, Codable, Hashable {
-    let id: String
+    let id: UUID
     let plateNumber: String
     let ownerId: String?
     let ownerEmail: String?

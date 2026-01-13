@@ -9,15 +9,15 @@
 
 import Foundation
 
-struct Reservation: Identifiable, Decodable {
+struct Reservation: Identifiable, Decodable, Hashable {
     let id: UUID
     let userId: UUID
     let vehicleId: UUID
-    let vehiclePlate: String
+    let vehiclePlate: String?
     let parkingSpotId: UUID
     let parkingLotId: UUID
-    let parkingLotName: String
-    let parkingSpotCode: String
+    let parkingLotName: String?
+    let parkingSpotCode: String?
     
     let totalPrice: Double
     let currentChargeLevel: Int?
