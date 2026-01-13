@@ -26,7 +26,7 @@ Bu proje, kullanıcıların otoparkları harita üzerinden görüntüleyip rezer
     <td><img src="screenshots/ReservationPage.png" width="200"></td>
     <td><img src="screenshots/reservations.png" width="200"></td>
     <td><img src="screenshots/VehicleAdd.png" width="200"></td>
-    <td><img src="screenshots/VehicleSelected.png" width="200"></td>
+    <td><img src="screenshots/VehiscleSelected.png" width="200"></td>
   </tr>
 </table>
 
